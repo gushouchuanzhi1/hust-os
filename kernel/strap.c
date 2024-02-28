@@ -27,14 +27,7 @@ static void handle_syscall(trapframe *tf) {
   // IMPORTANT: return value should be returned to user app, or else, you will encounter
   // problems in later experiments!
   uint64 syscall_num = (tf->regs).a0;
-  (tf->regs).a0 = do_syscall(syscall_num,
-                        (tf->regs).a1,
-                        (tf->regs).a2,
-                        (tf->regs).a3,
-                        (tf->regs).a4,
-                        (tf->regs).a5,
-                        (tf->regs).a6,
-                        (tf->regs).a7);
+  (tf->regs).a0 = do_syscall(syscall_num,(tf->regs).a1,(tf->regs).a2,(tf->regs).a3,(tf->regs).a4, (tf->regs).a5,(tf->regs).a6,(tf->regs).a7);
 
 }
 
@@ -108,8 +101,13 @@ void rrsched() {
   // hint: increase the tick_count member of current process by one, if it is bigger than
   // TIME_SLICE_LEN (means it has consumed its time slice), change its status into READY,
   // place it in the rear of ready queue, and finally schedule next process to run.
-  panic( "You need to further implement the timer handling in lab3_3.\n" );
-
+  //panic( "You need to further implement the timer handling in lab3_3.\n" );
+  if(++current->tick_count >= TIME_SLICE_LEN){
+    current->tick_count = 0;
+    current->status = READY;
+    insert_to_ready_queue(current);
+    schedule();
+  }
 }
 
 //
