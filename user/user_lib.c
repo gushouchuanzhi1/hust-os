@@ -76,3 +76,20 @@ int fork() {
 void yield() {
   do_user_call(SYS_user_yield, 0, 0, 0, 0, 0, 0, 0);
 }
+
+int sem_new(int n) {
+    return do_user_call(SYS_user_new, n, 0, 0, 0, 0, 0, 0);
+}
+//
+// lib call to sem_P
+//
+int sem_P(int n) {
+    return do_user_call(SYS_user_P, n, 0, 0, 0, 0, 0, 0);
+}
+//
+// lib call to sem_V
+//
+int sem_V(int n) {
+    return do_user_call(SYS_user_V, n, 0, 0, 0, 0, 0, 0);
+}
+

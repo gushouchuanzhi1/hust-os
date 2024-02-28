@@ -20,8 +20,7 @@ typedef struct trapframe_t {
 
 // riscv-pke kernel supports at most 32 processes
 #define NPROC 32
-// maximum number of pages in a process's heap
-#define MAX_HEAP_PAGES 32
+#define NSEM  32
 
 // possible status of a process
 enum proc_status {
@@ -34,12 +33,11 @@ enum proc_status {
 
 // types of a segment
 enum segment_type {
-  STACK_SEGMENT = 0,   // runtime stack segment
-  CONTEXT_SEGMENT, // trapframe segment
-  SYSTEM_SEGMENT,  // system segment
-  HEAP_SEGMENT,    // runtime heap segment
   CODE_SEGMENT,    // ELF segment
   DATA_SEGMENT,    // ELF segment
+  STACK_SEGMENT,   // runtime segment
+  CONTEXT_SEGMENT, // trapframe segment
+  SYSTEM_SEGMENT,  // system segment
 };
 
 // the VM regions mapped to a user process
@@ -48,18 +46,6 @@ typedef struct mapped_region {
   uint32 npages;   // mapping_info is unused if npages == 0
   uint32 seg_type; // segment type, one of the segment_types
 } mapped_region;
-
-typedef struct process_heap_manager {
-  // points to the last free page in our simple heap.
-  uint64 heap_top;
-  // points to the bottom of our simple heap.
-  uint64 heap_bottom;
-
-  // the address of free pages in the heap
-  uint64 free_pages_address[MAX_HEAP_PAGES];
-  // the number of free pages in the heap
-  uint32 free_pages_count;
-}process_heap_manager;
 
 // the extremely simple definition of process, used for begining labs of PKE
 typedef struct process_t {
@@ -75,9 +61,6 @@ typedef struct process_t {
   // next free mapped region in mapped_info
   int total_mapped_region;
 
-  // heap management
-  process_heap_manager user_heap;
-
   // process id
   uint64 pid;
   // process status
@@ -91,9 +74,24 @@ typedef struct process_t {
   int tick_count;
 }process;
 
+typedef struct semaphore_t {
+  int value;
+  uint64 stat;
+  process *p_queue;
+}semaphore;
+
 // switch to run user app
 void switch_to(process*);
 
+// initialize process pool (the procs[] array)
+void init_proc_pool();
+void init_sem_pool();
+// allocate an empty process, init its vm space. returns its pid
+process* alloc_process();
+// reclaim a process, destruct its vm space and free physical pages.
+int free_process( process* proc );
+// fork a child from parent
+int do_fork(process* parent);
 // initialize process pool (the procs[] array)
 void init_proc_pool();
 // allocate an empty process, init its vm space. returns its pid
@@ -105,5 +103,8 @@ int do_fork(process* parent);
 
 // current running process
 extern process* current;
+
+// address of the first free page in our simple heap. added @lab2_2
+extern uint64 g_ufree_page;
 
 #endif
