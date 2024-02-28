@@ -8,6 +8,7 @@
 #include "syscall.h"
 #include "pmm.h"
 #include "vmm.h"
+#include "sched.h"
 #include "util/functions.h"
 #include "memlayout.h"
 #include "spike_interface/spike_utils.h"
@@ -83,7 +84,6 @@ void handle_user_page_fault(uint64 mcause, uint64 sepc, uint64 stval) {
         //         *pte = PA2PTE(pa) | prot_to_type(PROT_WRITE | PROT_READ, 1) | PTE_V;
         //     }
         // }
-        //修改2_3
         if(stval < USER_STACK_TOP && stval > (USER_STACK_TOP - 20 * STACK_SIZE))
         {
           void* pa = alloc_page();
