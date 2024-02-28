@@ -238,7 +238,7 @@ int do_fork( process* parent)
         //panic( "You need to implement the code segment mapping of child in lab3_1.\n" );
         child->mapped_info[CODE_SEGMENT].va = parent->mapped_info[CODE_SEGMENT].va;
         user_vm_map((pagetable_t)child->pagetable, child->mapped_info[CODE_SEGMENT].va, PGSIZE, 
-        lookup_pa(parent->pagetable, parent->mapped_info[CODE_SEGMENT].va),prot_to_type(PROT_EXEC | PROT_READ, 1));
+                    lookup_pa(parent->pagetable, parent->mapped_info[CODE_SEGMENT].va),prot_to_type(PROT_EXEC | PROT_READ, 1));
         // after mapping, register the vm region (do not delete codes below!)
         child->mapped_info[child->total_mapped_region].va = parent->mapped_info[i].va;
         child->mapped_info[child->total_mapped_region].npages =
